@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour
     [Header("World References")]
     public GameObject worldA;
     public GameObject worldB;
+    public Animator animator;
 
 
     private Rigidbody2D rb;
@@ -37,7 +38,7 @@ public class PlayerController : MonoBehaviour
         inputActions.Enable();
         inputActions.Player.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
         inputActions.Player.Move.canceled += _ => moveInput = Vector2.zero;
-        inputActions.Player.Jump.started += _ => jumpPressed = true;
+        inputActions.Player.Jump.started += OnJumpPressed;
         inputActions.Player.RestartLevel.performed += _ => RestartScene();
     }
 
@@ -49,28 +50,39 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         IsGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.1f, groundLayer);
-
-        if (jumpPressed && IsGrounded && Time.time >= lastJumpTime + jumpCooldown)
+        if (jumpPressed)
         {
             Jump();
             jumpPressed = false;
             lastJumpTime = Time.time;
         }
-
-        if (jumpPressed && Time.time < lastJumpTime + jumpCooldown)
-        {
-            jumpPressed = false;
-        }
+        animator.SetBool("ensuelo", IsGrounded);
     }
 
     void FixedUpdate()
     {
         rb.linearVelocity = new Vector2(moveInput.x * moveSpeed, rb.linearVelocity.y);
+        animator.SetFloat("movement", rb.linearVelocity.x);
+        if (rb.linearVelocity.x < 0)
+        {
+            transform.localScale = new Vector2(-1, 1);
+        }
+        if (rb.linearVelocity.x > 0)
+        {
+            transform.localScale = new Vector2(1,1);
+        }
     }
 
     public void Jump()
     {
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+    }
+        private void OnJumpPressed(InputAction.CallbackContext context)
+    {
+        if (IsGrounded && Time.time >= lastJumpTime + jumpCooldown)
+        {
+            jumpPressed = true;
+        }
     }
     void OnDrawGizmosSelected()
     {

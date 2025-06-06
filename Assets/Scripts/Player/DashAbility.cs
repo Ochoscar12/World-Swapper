@@ -38,6 +38,7 @@ public class DashAbility : MonoBehaviour
                 isDashing = false;
             }
         }
+        player.animator.SetBool("dasheando", isDashing);
     }
 
     void FixedUpdate()
