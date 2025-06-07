@@ -11,12 +11,9 @@ public class WorldSwitchAbility : MonoBehaviour
     void Awake()
     {
         player = GetComponent<PlayerController>();
-
-        // Obtener referencias desde el jugador
         worldA = player.worldA;
         worldB = player.worldB;
 
-        // Asegurarse que el mundo A esté activo y B inactivo al iniciar
         if (worldA != null) worldA.SetActive(true);
         if (worldB != null) worldB.SetActive(false);
     }
